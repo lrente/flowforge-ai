@@ -145,3 +145,4 @@ C:\flowforge-ai\flowforge-ai\backend\FlowForge.Api\bin\Debug\net9.0\Microsoft.Id
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Api\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Api\bin\Debug\net9.0\Microsoft.IdentityModel.Tokens.dll
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Api\bin\Debug\net9.0\System.IdentityModel.Tokens.Jwt.dll
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Api\obj\Debug\net9.0\FlowForge.Api.sourcelink.json

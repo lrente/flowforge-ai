@@ -13,3 +13,4 @@ C:\flowforge-ai\flowforge-ai\backend\FlowForge.Application\obj\Debug\net9.0\Flow
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Application\obj\Debug\net9.0\refint\FlowForge.Application.dll
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Application\obj\Debug\net9.0\FlowForge.Application.pdb
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Application\obj\Debug\net9.0\ref\FlowForge.Application.dll
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Application\obj\Debug\net9.0\FlowForge.Application.sourcelink.json

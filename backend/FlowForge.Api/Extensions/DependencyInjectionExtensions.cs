@@ -19,6 +19,7 @@ public static class DependencyInjectionExtensions
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IJwtService, JwtService>();
 
         var jwtKey = configuration["Jwt:Key"] ?? "development-secret-key-123456";
         var issuer = configuration["Jwt:Issuer"] ?? "FlowForge";

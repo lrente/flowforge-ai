@@ -1,12 +1,7 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using FlowForge.Application.DTOs.Auth;
 using FlowForge.Application.Interfaces;
 using FlowForge.Domain.Entities;
 using FlowForge.Domain.Interfaces;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using BC = BCrypt.Net.BCrypt;
 
 namespace FlowForge.Infrastructure.Services;
@@ -14,12 +9,12 @@ namespace FlowForge.Infrastructure.Services;
 public sealed class AuthService : IAuthService
 {
     private readonly IUserRepository _userRepository;
-    private readonly IConfiguration _configuration;
+    private readonly IJwtService _jwtService;
 
-    public AuthService(IUserRepository userRepository, IConfiguration configuration)
+    public AuthService(IUserRepository userRepository, IJwtService jwtService)
     {
         _userRepository = userRepository;
-        _configuration = configuration;
+        _jwtService = jwtService;
     }
 
     public async Task<LoginResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
@@ -64,7 +59,7 @@ public sealed class AuthService : IAuthService
 
     private Task<LoginResponse> GenerateResponseAsync(User user, CancellationToken cancellationToken)
     {
-        var token = GenerateJwtToken(user);
+        var token = _jwtService.GenerateToken(user);
         var response = new LoginResponse
         {
             Token = token,
@@ -73,31 +68,5 @@ public sealed class AuthService : IAuthService
         };
 
         return Task.FromResult(response);
-    }
-
-    private string GenerateJwtToken(User user)
-    {
-        var jwtKey = _configuration["Jwt:Key"] ?? "development-secret-key-123456";
-        var issuer = _configuration["Jwt:Issuer"] ?? "FlowForge";
-        var audience = _configuration["Jwt:Audience"] ?? "FlowForgeClients";
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var claims = new[]
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim(ClaimTypes.Name, user.Name)
-        };
-
-        var token = new JwtSecurityToken(
-            issuer,
-            audience,
-            claims,
-            expires: DateTime.UtcNow.AddHours(8),
-            signingCredentials: credentials);
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

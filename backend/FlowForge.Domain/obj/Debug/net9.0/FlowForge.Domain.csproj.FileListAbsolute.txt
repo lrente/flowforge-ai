@@ -9,3 +9,4 @@ C:\flowforge-ai\flowforge-ai\backend\FlowForge.Domain\obj\Debug\net9.0\FlowForge
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Domain\obj\Debug\net9.0\refint\FlowForge.Domain.dll
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Domain\obj\Debug\net9.0\FlowForge.Domain.pdb
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Domain\obj\Debug\net9.0\ref\FlowForge.Domain.dll
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Domain\obj\Debug\net9.0\FlowForge.Domain.sourcelink.json
