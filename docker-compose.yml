@@ -58,6 +58,11 @@ services:
         condition: service_healthy
     networks:
       - flowforge-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:5678/healthz || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
     restart: unless-stopped
 
   backend:
@@ -66,9 +71,12 @@ services:
       dockerfile: Dockerfile
     container_name: flowforge-backend
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_ENVIRONMENT: Docker
       ASPNETCORE_URLS: http://+:5000
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB:-flowforge};Username=${POSTGRES_USER:-flowforge};Password=${POSTGRES_PASSWORD:-flowforge123}
+      Jwt__Key: ${JWT_KEY:-development-secret-key-123456}
+      Jwt__Issuer: ${JWT_ISSUER:-FlowForge}
+      Jwt__Audience: ${JWT_AUDIENCE:-FlowForgeClients}
     ports:
       - "5000:5000"
     depends_on:
@@ -78,6 +86,11 @@ services:
         condition: service_healthy
     networks:
       - flowforge-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:5000/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
     restart: unless-stopped
 
   frontend:
@@ -86,13 +99,19 @@ services:
       dockerfile: Dockerfile
     container_name: flowforge-frontend
     environment:
-      VITE_API_URL: http://localhost:5000
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
     ports:
-      - "5173:5173"
+      - "80:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_started
     networks:
       - flowforge-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/ || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
     restart: unless-stopped
 
   pgadmin:

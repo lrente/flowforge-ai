@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FlowForge.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3d3cb4c7ce86e252835b4aa2a16e5ce4ab234dc6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4a3853dc227e0db57a0dfd593eae2979785ffddd")]
 [assembly: System.Reflection.AssemblyProductAttribute("FlowForge.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FlowForge.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

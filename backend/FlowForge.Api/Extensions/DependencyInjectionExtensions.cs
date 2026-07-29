@@ -18,8 +18,18 @@ public static class DependencyInjectionExtensions
             options.UseNpgsql(connectionString));
 
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IAgentRepository, AgentRepository>();
+        services.AddScoped<IConversationRepository, ConversationRepository>();
+        services.AddScoped<IMessageRepository, MessageRepository>();
+        services.AddScoped<IKnowledgeRepository, KnowledgeRepository>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IAgentService, AgentService>();
+        services.AddScoped<IChatService, ChatService>();
         services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
+        services.AddScoped<IDocumentParser, DocumentParser>();
+        services.AddScoped<KnowledgeService>();
+        services.AddHttpClient<IOpenAiService, OpenAiService>();
 
         var jwtKey = configuration["Jwt:Key"] ?? "development-secret-key-123456";
         var issuer = configuration["Jwt:Issuer"] ?? "FlowForge";

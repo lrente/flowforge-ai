@@ -1,0 +1,15 @@
+namespace FlowForge.Application.DTOs.Knowledge;
+
+public sealed class KnowledgeDocumentResponse
+{
+    public Guid Id { get; set; }
+    public Guid AgentId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string FileName { get; set; } = string.Empty;
+    public string ContentType { get; set; } = string.Empty;
+    public string StoragePath { get; set; } = string.Empty;
+    public long Size { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; }
+}

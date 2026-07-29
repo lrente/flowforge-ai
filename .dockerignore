@@ -7,3 +7,7 @@
 .env
 .env.*
 README*
+.vscode/
+*.log
+*.tmp
+coverage/
