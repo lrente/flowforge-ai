@@ -33,6 +33,7 @@ public sealed class AgentService : IAgentService
             Id = Guid.NewGuid(),
             UserId = userId,
             Name = request.Name.Trim(),
+            BusinessType = request.BusinessType.Trim(),
             Description = request.Description.Trim(),
             CompanyName = request.CompanyName.Trim(),
             SystemPrompt = request.SystemPrompt.Trim(),
@@ -58,6 +59,7 @@ public sealed class AgentService : IAgentService
         }
 
         agent.Name = request.Name.Trim();
+        agent.BusinessType = request.BusinessType.Trim();
         agent.Description = request.Description.Trim();
         agent.CompanyName = request.CompanyName.Trim();
         agent.SystemPrompt = request.SystemPrompt.Trim();
@@ -92,6 +94,7 @@ public sealed class AgentService : IAgentService
             Id = agent.Id,
             UserId = agent.UserId,
             Name = agent.Name,
+            BusinessType = agent.BusinessType,
             Description = agent.Description,
             CompanyName = agent.CompanyName,
             SystemPrompt = agent.SystemPrompt,

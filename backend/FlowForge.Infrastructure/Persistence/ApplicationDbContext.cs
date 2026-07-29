@@ -34,6 +34,7 @@ public sealed class ApplicationDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.UserId).IsRequired();
             entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.BusinessType).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Description).HasMaxLength(1000);
             entity.Property(e => e.CompanyName).HasMaxLength(200);
             entity.Property(e => e.SystemPrompt).IsRequired().HasMaxLength(4000);

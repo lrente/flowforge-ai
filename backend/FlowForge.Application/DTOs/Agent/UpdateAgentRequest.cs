@@ -8,6 +8,10 @@ public sealed class UpdateAgentRequest
     [StringLength(200)]
     public string Name { get; set; } = string.Empty;
 
+    [Required]
+    [StringLength(200)]
+    public string BusinessType { get; set; } = string.Empty;
+
     [StringLength(1000)]
     public string Description { get; set; } = string.Empty;
 

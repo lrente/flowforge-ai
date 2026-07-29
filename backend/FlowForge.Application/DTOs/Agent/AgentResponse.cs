@@ -5,6 +5,7 @@ public sealed class AgentResponse
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
     public string Name { get; set; } = string.Empty;
+    public string BusinessType { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string CompanyName { get; set; } = string.Empty;
     public string SystemPrompt { get; set; } = string.Empty;

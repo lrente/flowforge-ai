@@ -19,6 +19,7 @@ public sealed class AgentController : ControllerBase
     }
 
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<AgentResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAgents(CancellationToken cancellationToken)
     {
         var userId = GetUserId();
@@ -32,6 +33,8 @@ public sealed class AgentController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(AgentResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAgent(Guid id, CancellationToken cancellationToken)
     {
         var userId = GetUserId();
@@ -45,6 +48,8 @@ public sealed class AgentController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(typeof(AgentResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateAgent([FromBody] CreateAgentRequest request, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
@@ -63,6 +68,8 @@ public sealed class AgentController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(typeof(AgentResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateAgent(Guid id, [FromBody] UpdateAgentRequest request, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
@@ -81,6 +88,8 @@ public sealed class AgentController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteAgent(Guid id, CancellationToken cancellationToken)
     {
         var userId = GetUserId();
