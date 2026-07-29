@@ -1,0 +1,17 @@
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\bin\Debug\net9.0\FlowForge.Infrastructure.deps.json
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\bin\Debug\net9.0\FlowForge.Infrastructure.dll
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\bin\Debug\net9.0\FlowForge.Infrastructure.pdb
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\bin\Debug\net9.0\FlowForge.Application.dll
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\bin\Debug\net9.0\FlowForge.Domain.dll
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\bin\Debug\net9.0\FlowForge.Application.pdb
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\bin\Debug\net9.0\FlowForge.Domain.pdb
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\FlowForge.Infrastructure.csproj.AssemblyReference.cache
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\FlowForge.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\FlowForge.Infrastructure.AssemblyInfoInputs.cache
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\FlowForge.Infrastructure.AssemblyInfo.cs
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\FlowForge.Infrastructure.csproj.CoreCompileInputs.cache
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\FlowForg.F9C55130.Up2Date
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\FlowForge.Infrastructure.dll
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\refint\FlowForge.Infrastructure.dll
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\FlowForge.Infrastructure.pdb
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\ref\FlowForge.Infrastructure.dll

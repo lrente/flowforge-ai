@@ -1,0 +1,124 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: flowforge-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-flowforge}
+      POSTGRES_USER: ${POSTGRES_USER:-flowforge}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-flowforge123}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - flowforge-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-flowforge} -d ${POSTGRES_DB:-flowforge}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: flowforge-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - flowforge-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: flowforge-n8n
+    environment:
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: ${POSTGRES_DB:-flowforge}
+      DB_POSTGRESDB_USER: ${POSTGRES_USER:-flowforge}
+      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD:-flowforge123}
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY:-flowforge-encryption-key}
+      N8N_HOST: ${N8N_HOST:-localhost}
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - flowforge-network
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: flowforge-backend
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5000
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB:-flowforge};Username=${POSTGRES_USER:-flowforge};Password=${POSTGRES_PASSWORD:-flowforge123}
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - flowforge-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: flowforge-frontend
+    environment:
+      VITE_API_URL: http://localhost:5000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - flowforge-network
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: flowforge-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@flowforge.ai}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin123}
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - flowforge-network
+    restart: unless-stopped
+
+networks:
+  flowforge-network:
+    name: flowforge-network
+    driver: bridge
+
+volumes:
+  postgres_data:
+    name: flowforge-postgres-data
+  redis_data:
+    name: flowforge-redis-data
+  n8n_data:
+    name: flowforge-n8n-data
