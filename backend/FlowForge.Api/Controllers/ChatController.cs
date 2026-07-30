@@ -8,7 +8,7 @@ namespace FlowForge.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+
 public sealed class ChatController : ControllerBase
 {
     private readonly IChatService _chatService;

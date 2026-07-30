@@ -5,16 +5,15 @@ using FlowForge.Application.Interfaces;
 using FlowForge.Infrastructure.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-
+using FlowForge.Infrastructure.Configuration;
 namespace FlowForge.Infrastructure.Services;
 
 public sealed class OpenAiService(
     HttpClient httpClient,
     IOptions<OpenAIOptions> options) : IOpenAiService
 {
-    private readonly HttpClient _httpClient = httpClient;
-
-private readonly OpenAIOptions _options = options.Value;
+        private readonly HttpClient _httpClient = httpClient;
+        private readonly OpenAIOptions _options = options.Value;
 
     public async Task<string> SendAsync(string message, CancellationToken cancellationToken = default)
     {
