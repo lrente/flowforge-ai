@@ -1,14 +1,12 @@
 using FlowForge.Domain.Entities;
 
-namespace FlowForge.Application.Interfaces;
+namespace FlowForge.Domain.Interfaces;
 
-public interface IKnowledgeRepository
+public interface IKnowledgeDocumentRepository
 {
     Task<IReadOnlyList<KnowledgeDocument>> GetByAgentIdAsync(Guid agentId, CancellationToken cancellationToken = default);
     Task<KnowledgeDocument?> GetByIdForAgentAsync(Guid id, Guid agentId, CancellationToken cancellationToken = default);
     Task AddAsync(KnowledgeDocument document, CancellationToken cancellationToken = default);
-    Task AddChunkAsync(KnowledgeChunk chunk, CancellationToken cancellationToken = default);
     Task DeleteAsync(KnowledgeDocument document, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<KnowledgeChunk>> SearchByEmbeddingAsync(Guid agentId, IReadOnlyList<float> embedding, int limit, CancellationToken cancellationToken = default);
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }

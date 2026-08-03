@@ -76,6 +76,14 @@ public sealed class ApplicationDbContext : DbContext
             entity.Property(e => e.Status).IsRequired().HasMaxLength(50);
             entity.Property(e => e.CreatedAt).IsRequired();
             entity.Property(e => e.UpdatedAt).IsRequired();
+            entity.HasOne(e => e.Agent)
+                .WithMany()
+                .HasForeignKey(e => e.AgentId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasMany(e => e.Chunks)
+                .WithOne(e => e.Document)
+                .HasForeignKey(e => e.DocumentId)
+                .OnDelete(DeleteBehavior.Cascade);
             entity.HasIndex(e => new { e.AgentId, e.CreatedAt });
         });
 
@@ -85,7 +93,9 @@ public sealed class ApplicationDbContext : DbContext
             entity.Property(e => e.DocumentId).IsRequired();
             entity.Property(e => e.Content).IsRequired().HasMaxLength(4000);
             entity.Property(e => e.ChunkIndex).IsRequired();
+            entity.Property(e => e.Embedding).HasColumnType("vector");
             entity.Property(e => e.CreatedAt).IsRequired();
+            entity.Property(e => e.UpdatedAt).IsRequired();
             entity.HasIndex(e => new { e.DocumentId, e.ChunkIndex });
         });
 

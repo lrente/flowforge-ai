@@ -2,6 +2,7 @@ using FlowForge.Application.Interfaces;
 using FlowForge.Domain.Entities;
 using FlowForge.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace FlowForge.Infrastructure.Repositories;
 
@@ -32,10 +33,38 @@ public sealed class KnowledgeRepository : IKnowledgeRepository
         await _context.KnowledgeDocuments.AddAsync(document, cancellationToken);
     }
 
+    public async Task AddChunkAsync(KnowledgeChunk chunk, CancellationToken cancellationToken = default)
+    {
+        await _context.KnowledgeChunks.AddAsync(chunk, cancellationToken);
+    }
+
     public Task DeleteAsync(KnowledgeDocument document, CancellationToken cancellationToken = default)
     {
         _context.KnowledgeDocuments.Remove(document);
         return Task.CompletedTask;
+    }
+
+    public async Task<IReadOnlyList<KnowledgeChunk>> SearchByEmbeddingAsync(Guid agentId, IReadOnlyList<float> embedding, int limit, CancellationToken cancellationToken = default)
+    {
+        var vectorValues = embedding.Select(value => value.ToString(System.Globalization.CultureInfo.InvariantCulture)).ToArray();
+        var vectorLiteral = "[" + string.Join(",", vectorValues) + "]";
+
+        var chunks = await _context.KnowledgeChunks
+            .FromSqlInterpolated($"""
+                SELECT "Id", "DocumentId", "Content", "ChunkIndex", "Embedding", "EmbeddingId", "CreatedAt", "UpdatedAt"
+                FROM "KnowledgeChunks"
+                WHERE "DocumentId" IN (
+                    SELECT "Id"
+                    FROM "KnowledgeDocuments"
+                    WHERE "AgentId" = {agentId}
+                )
+                ORDER BY "Embedding" <-> {vectorLiteral}::vector
+                LIMIT {limit}
+                """)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        return chunks;
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)

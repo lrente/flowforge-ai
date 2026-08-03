@@ -11,6 +11,7 @@ public sealed class KnowledgeDocument : BaseEntity
     public string StoragePath { get; set; } = string.Empty;
     public long Size { get; set; }
     public string Status { get; set; } = "Uploaded";
-    public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset UpdatedAt { get; set; }
+
+    public Agent? Agent { get; set; }
+    public ICollection<KnowledgeChunk> Chunks { get; set; } = new List<KnowledgeChunk>();
 }

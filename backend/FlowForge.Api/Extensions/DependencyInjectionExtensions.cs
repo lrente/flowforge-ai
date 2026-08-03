@@ -1,5 +1,6 @@
 using FlowForge.Application.Interfaces;
 using FlowForge.Domain.Interfaces;
+using FlowForge.Infrastructure.Configuration;
 using FlowForge.Infrastructure.Persistence;
 using FlowForge.Infrastructure.Repositories;
 using FlowForge.Infrastructure.Services;
@@ -22,6 +23,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IConversationRepository, ConversationRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();
         services.AddScoped<IKnowledgeRepository, KnowledgeRepository>();
+        services.AddScoped<IKnowledgeSearchService, KnowledgeSearchService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAgentService, AgentService>();
         services.AddScoped<IChatService, ChatService>();
@@ -29,6 +31,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
         services.AddScoped<IDocumentParser, DocumentParser>();
         services.AddScoped<KnowledgeService>();
+        services.Configure<OpenAIOptions>(configuration.GetSection(OpenAIOptions.SectionName));
         services.AddHttpClient<IOpenAiService, OpenAiService>();
 
         var jwtKey = configuration["Jwt:Key"] ?? "development-secret-key-123456";
