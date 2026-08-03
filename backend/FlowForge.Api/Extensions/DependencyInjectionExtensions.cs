@@ -23,6 +23,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IConversationRepository, ConversationRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();
         services.AddScoped<IKnowledgeRepository, KnowledgeRepository>();
+        services.AddScoped<IKnowledgeDocumentRepository, KnowledgeDocumentRepository>();
+        services.AddScoped<IKnowledgeChunkRepository, KnowledgeChunkRepository>();
         services.AddScoped<IKnowledgeSearchService, KnowledgeSearchService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAgentService, AgentService>();
@@ -30,6 +32,9 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
         services.AddScoped<IDocumentParser, DocumentParser>();
+        services.AddScoped<ITextChunker, TextChunker>();
+        services.AddScoped<IEmbeddingService, EmbeddingService>();
+        services.AddScoped<IKnowledgeProcessingService, KnowledgeProcessingService>();
         services.AddScoped<KnowledgeService>();
         services.Configure<OpenAIOptions>(configuration.GetSection(OpenAIOptions.SectionName));
         services.AddHttpClient<IOpenAiService, OpenAiService>();

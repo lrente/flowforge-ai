@@ -9,12 +9,14 @@ public sealed class KnowledgeService
 {
     private readonly IKnowledgeRepository _knowledgeRepository;
     private readonly IDocumentParser _documentParser;
+    private readonly IKnowledgeProcessingService _knowledgeProcessingService;
     private readonly IConfiguration _configuration;
 
-    public KnowledgeService(IKnowledgeRepository knowledgeRepository, IDocumentParser documentParser, IConfiguration configuration)
+    public KnowledgeService(IKnowledgeRepository knowledgeRepository, IDocumentParser documentParser, IKnowledgeProcessingService knowledgeProcessingService, IConfiguration configuration)
     {
         _knowledgeRepository = knowledgeRepository;
         _documentParser = documentParser;
+        _knowledgeProcessingService = knowledgeProcessingService;
         _configuration = configuration;
     }
 
@@ -68,7 +70,7 @@ public sealed class KnowledgeService
         await _knowledgeRepository.AddAsync(document, cancellationToken);
         await _knowledgeRepository.SaveChangesAsync(cancellationToken);
 
-        await _documentParser.ExtractTextAsync(document, cancellationToken);
+        await _knowledgeProcessingService.ProcessDocumentAsync(document, cancellationToken);
 
         return new KnowledgeDocumentResponse
         {
