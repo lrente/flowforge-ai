@@ -1,4 +1,5 @@
 using FlowForge.Api.Extensions;
+using FlowForge.Infrastructure.Persistence;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,12 +38,16 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddApplicationServices(connectionString, builder.Configuration);
 
 var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
+/*using (var scope = app.Services.CreateScope())
 {
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await DatabaseSeeder.SeedAsync(db);
+}*/
+
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 
 app.MapGet("/health", () => Results.Ok(new { status = "Healthy" }));
 

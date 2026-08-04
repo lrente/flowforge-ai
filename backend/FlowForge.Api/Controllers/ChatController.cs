@@ -19,7 +19,7 @@ public sealed class ChatController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetConversations(CancellationToken cancellationToken)
+    public async Task<IActionResult> chatserviceGetConversations(CancellationToken cancellationToken)
     {
         var visitorId = GetVisitorId();
         if (visitorId is null)
