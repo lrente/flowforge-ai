@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using FlowForge.Application.Helpers;
 
 namespace FlowForge.Application.DTOs.Agent;
 
@@ -22,9 +23,8 @@ public sealed class CreateAgentRequest
     [StringLength(4000)]
     public string SystemPrompt { get; set; } = string.Empty;
 
-    [Required]
     [StringLength(100)]
-    public string Model { get; set; } = string.Empty;
+    public string Model { get; set; } = AiModels.GPT41Mini;
 
     [Range(0, 1)]
     public double Temperature { get; set; } = 0.7;

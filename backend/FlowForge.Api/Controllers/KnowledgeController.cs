@@ -5,6 +5,7 @@ using FlowForge.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using FlowForge.Api.Models;
 
 namespace FlowForge.Api.Controllers;
 
@@ -22,45 +23,52 @@ public sealed class KnowledgeController : ControllerBase
         _agentRepository = agentRepository;
     }
 
-    [HttpPost("upload")]
-    public async Task<IActionResult> Upload([FromForm] UploadDocumentRequest request, CancellationToken cancellationToken)
+
+[HttpPost("upload")]
+public async Task<IActionResult> Upload(
+    [FromForm] UploadDocumentForm request,
+    CancellationToken cancellationToken)
+{
+    if (!ModelState.IsValid)
+        return ValidationProblem(ModelState);
+
+    var userId = GetUserId();
+    if (userId is null)
+        return Unauthorized();
+
+    var agent = await _agentRepository.GetByIdAsync(request.AgentId, cancellationToken);
+
+    if (agent is null || agent.UserId != userId.Value)
+        return Forbid();
+
+    await using var stream = request.File.OpenReadStream();
+
+    var uploadRequest = new UploadDocumentRequest
     {
-        if (!ModelState.IsValid)
-        {
-            return ValidationProblem(ModelState);
-        }
+        AgentId = request.AgentId,
+        FileName = request.File.FileName,
+        ContentType = request.File.ContentType,
+        Length = request.File.Length,
+        Content = stream
+    };
 
-        var userId = GetUserId();
-        if (userId is null)
-        {
-            return Unauthorized();
-        }
+    try
+    {
+        var response = await _knowledgeService.UploadAsync(
+            request.AgentId,
+            uploadRequest,
+            cancellationToken);
 
-        var uploadRequest = new UploadDocumentRequest
-        {
-            AgentId = request.AgentId,
-            FileName = request.FileName,
-            ContentType = request.ContentType,
-            Content = request.Content,
-            Length = request.Length
-        };
-
-        var agent = await _agentRepository.GetByIdAsync(request.AgentId, cancellationToken);
-        if (agent is null || agent.UserId != userId.Value)
-        {
-            return Forbid();
-        }
-
-        try
-        {
-            var response = await _knowledgeService.UploadAsync(request.AgentId, uploadRequest, cancellationToken);
-            return Ok(response);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        return Ok(response);
     }
+    catch (InvalidOperationException ex)
+    {
+        return BadRequest(new
+        {
+            message = ex.Message
+        });
+    }
+}
 
     [HttpGet]
     public async Task<IActionResult> GetDocuments(CancellationToken cancellationToken)

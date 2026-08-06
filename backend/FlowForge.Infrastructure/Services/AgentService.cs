@@ -1,9 +1,9 @@
+using System.ComponentModel.DataAnnotations;
 using FlowForge.Application.DTOs.Agent;
 using FlowForge.Application.Interfaces;
 using FlowForge.Domain.Entities;
 using FlowForge.Domain.Interfaces;
-
-namespace FlowForge.Infrastructure.Services;
+using  FlowForge.Infrastructure.Helpers;
 
 public sealed class AgentService : IAgentService
 {
@@ -52,6 +52,9 @@ public sealed class AgentService : IAgentService
 
     public async Task<AgentResponse?> UpdateAgentAsync(Guid id, Guid userId, UpdateAgentRequest request, CancellationToken cancellationToken = default)
     {
+        if (!SupportedModels.All.Contains(request.Model))
+            throw new ValidationException("Unsupported model.");
+
         var agent = await _agentRepository.GetByIdForUserAsync(id, userId, cancellationToken);
         if (agent is null)
         {

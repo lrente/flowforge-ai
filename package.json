@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "react-dropzone": "^20.0.0",
+    "react-hot-toast": "^2.6.0"
+  }
+}

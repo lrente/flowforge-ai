@@ -1,0 +1,47 @@
+{conversations.length === 0 ? (
+    <div className="p-6 text-center text-slate-500">
+        No conversations yet
+    </div>
+) : (
+    conversations.map((conversation) => {
+        const isSelected =
+            selectedConversation?.id === conversation.id;
+
+        return (
+            <div
+                key={conversation.id}
+                onClick={() => onSelect(conversation)}
+                className={`cursor-pointer border-b border-slate-800 p-4 transition hover:bg-slate-800 ${
+                    isSelected ? "bg-slate-800" : ""
+                }`}
+            >
+                <div className="flex items-start justify-between">
+                    <div className="min-w-0">
+                        <div className="truncate font-medium text-white">
+                            {conversation.title}
+                        </div>
+
+                        <div className="mt-1 text-xs text-slate-400">
+                            {conversation.messageCount}{" "}
+                            {conversation.messageCount === 1
+                                ? "message"
+                                : "messages"}
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        aria-label={`Delete ${conversation.title}`}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(conversation.id);
+                        }}
+                        className="ml-2 text-red-400 hover:text-red-300"
+                    >
+                        <Trash2 className="h-4 w-4" />
+                    </button>
+                </div>
+            </div>
+        );
+    })
+)}

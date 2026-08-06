@@ -1,5 +1,6 @@
 using FlowForge.Api.Extensions;
 using FlowForge.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,14 +37,31 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 builder.Services.AddApplicationServices(connectionString, builder.Configuration);
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:5173",
+                "http://localhost:80",
+                "http://localhost"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 var app = builder.Build();
-/*using (var scope = app.Services.CreateScope())
+app.UseCors("Frontend");app.UseCors("Frontend");
+using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     await DatabaseSeeder.SeedAsync(db);
-}*/
+    
+}
 
+using (var scope = app.Services.CreateScope())
 
     app.UseSwagger();
     app.UseSwaggerUI();

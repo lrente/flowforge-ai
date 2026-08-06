@@ -1,0 +1,21 @@
+export default function MessageBubble({ role, content }) {
+    const isUser = role === "user";
+
+    return (
+        <div
+            className={`flex mb-4 ${
+                isUser ? "justify-end" : "justify-start"
+            }`}
+        >
+            <div
+                className={`max-w-[75%] rounded-2xl px-5 py-3 shadow ${
+                    isUser
+                        ? "bg-cyan-500 text-black"
+                        : "bg-slate-800 text-white"
+                }`}
+            >
+                {content}
+            </div>
+        </div>
+    );
+}
