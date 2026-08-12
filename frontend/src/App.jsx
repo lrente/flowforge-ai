@@ -7,6 +7,8 @@ import AgentEditorPage from './pages/AgentEditorPage';
 import KnowledgePage from './pages/KnowledgePage';
 import ChatPage from './pages/ChatPage';
 import SettingsPage from './pages/SettingsPage';
+import UsersPage from './pages/UsersPage';
+import AuditLogPage from './pages/AuditLogPage';
 
 const isAuthenticated = () => Boolean(localStorage.getItem('token'));
 
@@ -33,6 +35,8 @@ export default function App() {
         <Route path="knowledge" element={<KnowledgePage />} />
         <Route path="conversations" element={<ChatPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="users" element={<UsersPage />} />
+        <Route path="audit-logs" element={<AuditLogPage />} />
       </Route>
     </Routes>
   );

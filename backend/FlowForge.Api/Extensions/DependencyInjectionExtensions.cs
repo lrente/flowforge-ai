@@ -17,6 +17,7 @@ public static class DependencyInjectionExtensions
     {
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(connectionString));
+        services.AddHttpContextAccessor();
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAgentRepository, AgentRepository>();
@@ -31,6 +32,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IChatService, ChatService>();
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
+        services.AddScoped<ITenantContext, TenantContext>();
+        services.AddScoped<IAuditService, AuditService>();
         services.AddScoped<IDocumentParser, DocumentParser>();
         services.AddScoped<ITextChunker, TextChunker>();
         services.AddScoped<IEmbeddingService, EmbeddingService>();

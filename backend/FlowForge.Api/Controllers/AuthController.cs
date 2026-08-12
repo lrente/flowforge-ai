@@ -2,6 +2,10 @@ using FlowForge.Application.DTOs.Auth;
 using FlowForge.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using FlowForge.Infrastructure.Persistence;
+using FlowForge.Application.Interfaces;
+using FlowForge.Application.Security;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlowForge.Api.Controllers;
 
@@ -10,10 +14,14 @@ namespace FlowForge.Api.Controllers;
 public sealed class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly ApplicationDbContext _db;
+    private readonly ITenantContext _tenant;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, ApplicationDbContext db, ITenantContext tenant)
     {
         _authService = authService;
+        _db = db;
+        _tenant = tenant;
     }
 
     [HttpPost("register")]
@@ -55,6 +63,9 @@ public sealed class AuthController : ControllerBase
         }
 
         var user = await _authService.GetCurrentUserAsync(userId, cancellationToken);
-        return user is null ? NotFound() : Ok(new { user.Id, user.Name, user.Email });
+        var access = await _tenant.GetAccessAsync(cancellationToken);
+        if (user is null || access is null) return NotFound();
+        var client = await _db.Clients.AsNoTracking().FirstOrDefaultAsync(c => c.Id == access.ClientId, cancellationToken);
+        return client is null ? NotFound() : Ok(new { user.Id, user.Name, user.Email, client = new { client.Id, client.Name }, role = access.Role.ToString(), permissions = Permissions.For(access.Role) });
     }
 }

@@ -3,6 +3,7 @@ using FlowForge.Application.DTOs.Agent;
 using FlowForge.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using FlowForge.Application.Security;
 
 namespace FlowForge.Api.Controllers;
 
@@ -12,10 +13,12 @@ namespace FlowForge.Api.Controllers;
 public sealed class AgentsController : ControllerBase
 {
     private readonly IAgentService _agentService;
+    private readonly ITenantContext _tenantContext;
 
-    public AgentsController(IAgentService agentService)
+    public AgentsController(IAgentService agentService, ITenantContext tenantContext)
     {
         _agentService = agentService;
+        _tenantContext = tenantContext;
     }
 
     [HttpGet]
@@ -24,6 +27,7 @@ public sealed class AgentsController : ControllerBase
     public async Task<ActionResult<IReadOnlyList<AgentResponse>>> GetAgents(
         CancellationToken cancellationToken)
     {
+        if (!await HasAsync(Permissions.AgentsView, cancellationToken)) return Forbid();
         var userId = GetUserId();
 
         var agents = await _agentService.GetAgentsAsync(
@@ -41,6 +45,7 @@ public sealed class AgentsController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
+        if (!await HasAsync(Permissions.AgentsView, cancellationToken)) return Forbid();
         var userId = GetUserId();
 
         var agent = await _agentService.GetAgentAsync(
@@ -61,6 +66,7 @@ public sealed class AgentsController : ControllerBase
         CreateAgentRequest request,
         CancellationToken cancellationToken)
     {
+        if (!await HasAsync(Permissions.AgentsCreate, cancellationToken)) return Forbid();
         var userId = GetUserId();
 
         var agent = await _agentService.CreateAgentAsync(
@@ -84,6 +90,7 @@ public sealed class AgentsController : ControllerBase
         UpdateAgentRequest request,
         CancellationToken cancellationToken)
     {
+        if (!await HasAsync(Permissions.AgentsUpdate, cancellationToken)) return Forbid();
         var userId = GetUserId();
 
         var agent = await _agentService.UpdateAgentAsync(
@@ -105,6 +112,7 @@ public sealed class AgentsController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
+        if (!await HasAsync(Permissions.AgentsDelete, cancellationToken)) return Forbid();
         var userId = GetUserId();
 
         var deleted = await _agentService.DeleteAgentAsync(
@@ -129,5 +137,11 @@ public sealed class AgentsController : ControllerBase
         }
 
         return userId;
+    }
+
+    private async Task<bool> HasAsync(string permission, CancellationToken cancellationToken)
+    {
+        var access = await _tenantContext.GetAccessAsync(cancellationToken);
+        return access is not null && (access.IsSystemAdministrator || Permissions.Has(access.Role, permission));
     }
 }

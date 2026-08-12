@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using FlowForge.Api.Models;
+using FlowForge.Application.Interfaces;
+using FlowForge.Application.Security;
 
 namespace FlowForge.Api.Controllers;
 
@@ -16,11 +18,13 @@ public sealed class KnowledgeController : ControllerBase
 {
     private readonly KnowledgeService _knowledgeService;
     private readonly IAgentRepository _agentRepository;
+    private readonly ITenantContext _tenant;
 
-    public KnowledgeController(KnowledgeService knowledgeService, IAgentRepository agentRepository)
+    public KnowledgeController(KnowledgeService knowledgeService, IAgentRepository agentRepository, ITenantContext tenant)
     {
         _knowledgeService = knowledgeService;
         _agentRepository = agentRepository;
+        _tenant = tenant;
     }
 
 
@@ -29,6 +33,7 @@ public async Task<IActionResult> Upload(
     [FromForm] UploadDocumentForm request,
     CancellationToken cancellationToken)
 {
+    if (!await HasAsync(Permissions.KnowledgeCreate, cancellationToken)) return Forbid();
     if (!ModelState.IsValid)
         return ValidationProblem(ModelState);
 
@@ -36,7 +41,8 @@ public async Task<IActionResult> Upload(
     if (userId is null)
         return Unauthorized();
 
-    var agent = await _agentRepository.GetByIdAsync(request.AgentId, cancellationToken);
+    var access = await _tenant.GetAccessAsync(cancellationToken);
+    var agent = access is null ? null : await _agentRepository.GetByIdForClientAsync(request.AgentId, access.ClientId, cancellationToken);
 
     if (agent is null || agent.UserId != userId.Value)
         return Forbid();
@@ -73,6 +79,7 @@ public async Task<IActionResult> Upload(
     [HttpGet]
     public async Task<IActionResult> GetDocuments(CancellationToken cancellationToken)
     {
+        if (!await HasAsync(Permissions.KnowledgeView, cancellationToken)) return Forbid();
         var userId = GetUserId();
         if (userId is null)
         {
@@ -86,6 +93,7 @@ public async Task<IActionResult> Upload(
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetDocument(Guid id, CancellationToken cancellationToken)
     {
+        if (!await HasAsync(Permissions.KnowledgeView, cancellationToken)) return Forbid();
         var userId = GetUserId();
         if (userId is null)
         {
@@ -99,6 +107,7 @@ public async Task<IActionResult> Upload(
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteDocument(Guid id, CancellationToken cancellationToken)
     {
+        if (!await HasAsync(Permissions.KnowledgeDelete, cancellationToken)) return Forbid();
         var userId = GetUserId();
         if (userId is null)
         {
@@ -114,4 +123,5 @@ public async Task<IActionResult> Upload(
         var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
         return Guid.TryParse(claim, out var userId) ? userId : null;
     }
+    private async Task<bool> HasAsync(string permission, CancellationToken ct) { var access = await _tenant.GetAccessAsync(ct); return access is not null && (access.IsSystemAdministrator || Permissions.Has(access.Role, permission)); }
 }

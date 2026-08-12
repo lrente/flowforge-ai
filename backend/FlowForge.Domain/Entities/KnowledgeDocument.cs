@@ -5,6 +5,7 @@ namespace FlowForge.Domain.Entities;
 public sealed class KnowledgeDocument : BaseEntity
 {
     public Guid AgentId { get; set; }
+    public Guid ClientId { get; set; }
     public string Title { get; set; } = string.Empty;
     public string FileName { get; set; } = string.Empty;
     public string ContentType { get; set; } = string.Empty;

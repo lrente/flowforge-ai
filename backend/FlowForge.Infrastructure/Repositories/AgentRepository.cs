@@ -22,6 +22,8 @@ public sealed class AgentRepository : IAgentRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<Agent>> GetByClientIdAsync(Guid clientId, CancellationToken cancellationToken = default) => await _context.Agents.Where(a => a.ClientId == clientId).OrderByDescending(a => a.CreatedAt).ToListAsync(cancellationToken);
+
     public async Task<Agent?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Agents.FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
@@ -31,6 +33,7 @@ public sealed class AgentRepository : IAgentRepository
     {
         return await _context.Agents.FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId, cancellationToken);
     }
+    public Task<Agent?> GetByIdForClientAsync(Guid id, Guid clientId, CancellationToken cancellationToken = default) => _context.Agents.FirstOrDefaultAsync(a => a.Id == id && a.ClientId == clientId, cancellationToken);
 
     public async Task AddAsync(Agent agent, CancellationToken cancellationToken = default)
     {

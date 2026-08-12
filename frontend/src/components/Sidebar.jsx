@@ -1,15 +1,19 @@
 import { NavLink } from 'react-router-dom';
 import { AgentsIcon, ArrowRightIcon, ConversationIcon, DashboardIcon, KnowledgeIcon, SettingsIcon, SparklesIcon } from './Icons';
+import { useAuth } from '../auth';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: DashboardIcon },
   { to: '/agents', label: 'Agents', icon: AgentsIcon },
   { to: '/knowledge', label: 'Knowledge', icon: KnowledgeIcon },
   { to: '/conversations', label: 'Conversations', icon: ConversationIcon },
-  { to: '/settings', label: 'Settings', icon: SettingsIcon }
+  { to: '/users', label: 'Users', icon: AgentsIcon, permission: 'Users.View' },
+  { to: '/audit-logs', label: 'Audit Log', icon: ConversationIcon, permission: 'AuditLogs.View' },
+  { to: '/settings', label: 'Settings', icon: SettingsIcon, permission: 'Client.Settings.View' }
 ];
 
 export default function Sidebar({ collapsed, onToggle }) {
+  const { can } = useAuth();
   return (
     <aside className={`hidden border-r border-white/10 bg-slate-950/85 backdrop-blur-xl lg:flex lg:flex-col ${collapsed ? 'w-20' : 'w-72'}`}>
       <div className="flex items-center justify-between border-b border-white/10 px-5 py-5">
@@ -25,7 +29,7 @@ export default function Sidebar({ collapsed, onToggle }) {
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-4">
-        {navItems.map((item) => {
+        {navItems.filter((item) => !item.permission || can(item.permission)).map((item) => {
           const Icon = item.icon;
           return (
             <NavLink

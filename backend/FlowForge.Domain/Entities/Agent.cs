@@ -5,6 +5,7 @@ namespace FlowForge.Domain.Entities;
 public sealed class Agent : BaseEntity
 {
     public Guid UserId { get; set; }
+    public Guid ClientId { get; set; }
     public string Name { get; set; } = string.Empty;
     public string BusinessType { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
