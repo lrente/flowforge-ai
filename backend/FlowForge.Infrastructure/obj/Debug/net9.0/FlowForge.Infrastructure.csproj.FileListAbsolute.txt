@@ -10,9 +10,9 @@ C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\F
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\FlowForge.Infrastructure.AssemblyInfoInputs.cache
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\FlowForge.Infrastructure.AssemblyInfo.cs
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\FlowForge.Infrastructure.csproj.CoreCompileInputs.cache
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\FlowForge.Infrastructure.sourcelink.json
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\FlowForg.F9C55130.Up2Date
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\FlowForge.Infrastructure.dll
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\refint\FlowForge.Infrastructure.dll
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\FlowForge.Infrastructure.pdb
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\ref\FlowForge.Infrastructure.dll
-C:\flowforge-ai\flowforge-ai\backend\FlowForge.Infrastructure\obj\Debug\net9.0\FlowForge.Infrastructure.sourcelink.json

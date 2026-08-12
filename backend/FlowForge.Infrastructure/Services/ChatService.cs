@@ -103,7 +103,7 @@ public sealed class ChatService : IChatService
         await _messageRepository.SaveChangesAsync(cancellationToken);
         await _conversationRepository.SaveChangesAsync(cancellationToken);
 
-        return new ChatResponse { Response = responseText };
+        return new ChatResponse { ConversationId = conversation.Id, Response = responseText };
     }
 
     public async Task<ChatResponse> SendMessageToConversationAsync(Guid conversationId, string message, Guid visitorId, CancellationToken cancellationToken = default)
