@@ -10,10 +10,10 @@ public static class DatabaseSeeder
     {
         await db.Database.MigrateAsync();
 
-        var user = await db.Users.FirstOrDefaultAsync(u => u.Email == "admin@flowforge.ai");
+        var user = await db.Users.FirstOrDefaultAsync(u => u.Email == "lrente@gmail.com");
         if (user is null)
         {
-            user = new User { Id = Guid.NewGuid(), Name = "Administrator", Email = "admin@flowforge.ai", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!"), CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow };
+            user = new User { Id = Guid.NewGuid(), Name = "Administrator", Email = "lrente@gmail.com", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Miguel84marta"), CreatedAt = DateTimeOffset.UtcNow, UpdatedAt = DateTimeOffset.UtcNow };
             db.Users.Add(user);
         }
         if (!await db.ClientMemberships.AnyAsync(m => m.UserId == user.Id))

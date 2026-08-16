@@ -2576,7 +2576,10 @@
         },
         "runtime": {
           "bin/placeholder/FlowForge.Infrastructure.dll": {}
-        }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       }
     }
   },
@@ -8189,6 +8192,7 @@
       "outputPath": "C:\\flowforge-ai\\flowforge-ai\\backend\\FlowForge.Api\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
+        "C:\\flowforge-ai\\flowforge-ai\\NuGet.Config",
         "C:\\Users\\lrent\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [

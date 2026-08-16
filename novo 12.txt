@@ -1,0 +1,1377 @@
+You are working on the existing FlowForge AI repository.
+
+IMPORTANT:
+The Workflow Generator and Workflow Validator have already been implemented.
+
+Your task now is to implement:
+
+1. VISUAL WORKFLOW EDITOR
+2. WORKFLOW EXECUTION ENGINE
+3. EXECUTION HISTORY / LOGS
+4. WORKFLOW TEST/RUN EXPERIENCE
+
+Do NOT rewrite the existing architecture.
+
+Before changing code:
+- Inspect the existing implementation.
+- Reuse existing WorkflowDefinition, WorkflowNode, WorkflowConnection,
+  node registry, tool registry, validation services, persistence and API patterns.
+- Reuse the existing frontend framework.
+- Reuse existing authentication and authorization.
+- Reuse existing logging.
+- Reuse existing PostgreSQL configuration.
+- Reuse existing Redis infrastructure if already available.
+
+Do NOT introduce a new frontend framework.
+
+Do NOT create a second workflow model.
+
+==================================================
+PRODUCT OBJECTIVE
+==================================================
+
+FlowForge AI should allow a user to:
+
+1. Describe a workflow using natural language.
+2. Generate a workflow with AI.
+3. Open the generated workflow in a visual editor.
+4. Add/remove/edit nodes.
+5. Connect nodes visually.
+6. Validate the workflow.
+7. Save it as Draft.
+8. Test/run it.
+9. See execution progress.
+10. Inspect execution logs.
+11. Deploy/activate the workflow.
+
+The final experience should be:
+
+Natural Language
+      ↓
+AI Workflow Generator
+      ↓
+Visual Workflow Editor
+      ↓
+Validation
+      ↓
+Save
+      ↓
+Test
+      ↓
+Execute
+      ↓
+Execution Logs
+      ↓
+Activate
+
+==================================================
+PART 1 - VISUAL WORKFLOW EDITOR
+==================================================
+
+Inspect the existing frontend.
+
+If a workflow visualization/editor library already exists,
+reuse it.
+
+If not, use a mature node-based library compatible with the
+existing frontend framework.
+
+Do NOT build a complicated canvas engine from scratch.
+
+The editor must support:
+
+- nodes
+- connections
+- drag & drop
+- zoom
+- pan
+- select node
+- delete node
+- connect nodes
+- edit node configuration
+- save
+- validate
+- run/test
+
+==================================================
+EDITOR LAYOUT
+==================================================
+
+Create the following layout:
+
+---------------------------------------------------------
+| FlowForge AI - Workflow Editor                       |
+---------------------------------------------------------
+| Node Palette |             Canvas          | Properties|
+|              |                             |           |
+| Trigger      |       [AI Agent]            | Node      |
+| AI Agent     |             ↓               | Name      |
+| Knowledge    |       [Knowledge]           | Type      |
+| HTTP         |             ↓               | Config    |
+| Condition    |         [HTTP]              |           |
+| Email        |                             |           |
+| Ticket       |                             |           |
+---------------------------------------------------------
+| Validate | Save Draft | Test Run | Activate |
+---------------------------------------------------------
+
+The editor should be responsive.
+
+==================================================
+PART 2 - NODE PALETTE
+==================================================
+
+The node palette must NOT be hardcoded independently from
+the backend registry.
+
+Create an API endpoint if necessary:
+
+GET /api/workflows/node-types
+
+The endpoint should return the registered node types.
+
+Example:
+
+[
+  {
+    "type": "ai-agent",
+    "name": "AI Agent",
+    "description": "Executes an AI agent",
+    "category": "AI"
+  },
+  {
+    "type": "knowledge-search",
+    "name": "Knowledge Search",
+    "description": "Searches a knowledge base",
+    "category": "AI"
+  },
+  {
+    "type": "http",
+    "name": "HTTP Request",
+    "description": "Calls an approved integration",
+    "category": "Integration"
+  },
+  {
+    "type": "condition",
+    "name": "Condition",
+    "description": "Branches execution",
+    "category": "Logic"
+  },
+  {
+    "type": "send-email",
+    "name": "Send Email",
+    "category": "Communication"
+  },
+  {
+    "type": "create-ticket",
+    "name": "Create Ticket",
+    "category": "Support"
+  }
+]
+
+The frontend should dynamically build the node palette from this API.
+
+==================================================
+PART 3 - NODE CONFIGURATION PANEL
+==================================================
+
+When a user selects a node, show its properties.
+
+Example AI Agent:
+
+Name:
+[ Customer Support Agent ]
+
+Model:
+[ default ]
+
+System Prompt:
+[................................]
+
+Temperature:
+[ 0.2 ]
+
+Knowledge Base:
+[ Customer Support ]
+
+Tools:
+[ get_customer ]
+[ get_order ]
+[ create_ticket ]
+
+The configuration must be generated based on the node definition
+returned by the backend where possible.
+
+Avoid hardcoding every node configuration in the frontend.
+
+==================================================
+PART 4 - WORKFLOW JSON
+==================================================
+
+The visual editor must operate directly on the existing:
+
+WorkflowDefinition
+
+model.
+
+Example:
+
+{
+  "name": "Customer Support Agent",
+  "description": "Handles customer support",
+  "nodes": [
+    {
+      "id": "agent",
+      "type": "ai-agent",
+      "name": "Support Agent",
+      "config": {}
+    },
+    {
+      "id": "knowledge",
+      "type": "knowledge-search",
+      "name": "Search Documentation",
+      "config": {}
+    }
+  ],
+  "connections": [
+    {
+      "fromNodeId": "agent",
+      "toNodeId": "knowledge"
+    }
+  ]
+}
+
+Do not create a separate frontend-only workflow model.
+
+Use mapping only for visual coordinates.
+
+If node position is required, add UI metadata without contaminating
+the domain model, or extend the existing model cleanly.
+
+Example:
+
+{
+  "ui": {
+    "position": {
+      "x": 400,
+      "y": 200
+    }
+  }
+}
+
+==================================================
+PART 5 - ADD NODE
+==================================================
+
+When the user drags a node from the palette onto the canvas:
+
+1. Generate a unique node ID.
+2. Create the node using the registered node type.
+3. Apply default configuration.
+4. Render it.
+5. Allow configuration.
+
+Never allow an unknown node type.
+
+==================================================
+PART 6 - CONNECTIONS
+==================================================
+
+Users must be able to connect nodes visually.
+
+Before saving:
+
+Validate:
+
+- source node exists
+- destination node exists
+- connection is allowed
+- no invalid references
+- required connections exist
+- condition nodes are correctly configured
+
+Use the existing WorkflowValidator.
+
+The frontend validation is for user experience.
+
+The backend validation remains authoritative.
+
+==================================================
+PART 7 - SAVE
+==================================================
+
+Implement:
+
+POST /api/workflows
+
+PUT /api/workflows/{id}
+
+GET /api/workflows/{id}
+
+The editor must save the current WorkflowDefinition.
+
+Support:
+
+Draft
+Active
+Archived
+
+Saving a workflow does NOT automatically activate it.
+
+==================================================
+PART 8 - VALIDATE BUTTON
+==================================================
+
+Add:
+
+[ Validate ]
+
+When clicked:
+
+POST /api/workflows/{id}/validate
+
+Return:
+
+{
+  "valid": true,
+  "errors": [],
+  "warnings": []
+}
+
+Display errors directly on the relevant nodes where possible.
+
+Example:
+
+AI Agent
+  ⚠ Missing model configuration
+
+HTTP Node
+  ❌ Unauthorized integration
+
+Do not allow execution if validation fails.
+
+==================================================
+PART 9 - EXECUTION ENGINE
+==================================================
+
+Implement a real MVP execution engine.
+
+Create:
+
+IWorkflowExecutor
+
+Example:
+
+Task<WorkflowExecutionResult> ExecuteAsync(
+    WorkflowDefinition workflow,
+    WorkflowExecutionContext context,
+    CancellationToken cancellationToken);
+
+Do NOT create a giant orchestration framework.
+
+The first implementation should execute workflows sequentially.
+
+==================================================
+EXECUTION MODEL
+==================================================
+
+Example:
+
+Trigger
+  ↓
+AI Agent
+  ↓
+Knowledge Search
+  ↓
+HTTP
+  ↓
+Condition
+  ↓
+Create Ticket
+
+Execution engine:
+
+1. Find trigger/start node.
+2. Execute node.
+3. Store node result.
+4. Find next node.
+5. Evaluate connection/condition.
+6. Execute next node.
+7. Continue until workflow completes.
+
+Pseudo:
+
+while currentNode != null:
+
+    validate node
+
+    create execution log
+
+    execute node
+
+    save result
+
+    determine next node
+
+    continue
+
+Return execution result.
+
+==================================================
+PART 10 - NODE EXECUTORS
+==================================================
+
+Create:
+
+IWorkflowNodeExecutor
+
+Implement:
+
+AiAgentNodeExecutor
+KnowledgeSearchNodeExecutor
+HttpNodeExecutor
+ConditionNodeExecutor
+SendEmailNodeExecutor
+CreateTicketNodeExecutor
+
+The executor registry should map:
+
+node.type
+    ↓
+executor
+
+Example:
+
+"ai-agent"
+    ↓
+AiAgentNodeExecutor
+
+"knowledge-search"
+    ↓
+KnowledgeSearchNodeExecutor
+
+"create-ticket"
+    ↓
+CreateTicketNodeExecutor
+
+Never use a giant switch statement if the existing architecture
+supports a cleaner strategy/registry pattern.
+
+==================================================
+PART 11 - AI AGENT EXECUTOR
+==================================================
+
+Reuse the existing LLM abstraction.
+
+Do NOT call Ollama directly from the execution engine.
+
+Use:
+
+ILLMProvider
+
+The node configuration determines:
+
+- model
+- system prompt
+- temperature
+- tools
+- knowledge sources
+
+The agent must only have access to tools allowed by the workflow.
+
+Do not expose secrets to the LLM.
+
+==================================================
+PART 12 - KNOWLEDGE SEARCH EXECUTOR
+==================================================
+
+Reuse the existing PostgreSQL + pgvector implementation.
+
+The node should:
+
+1. Receive query.
+2. Generate embedding using the existing embedding provider.
+3. Search pgvector.
+4. Return relevant documents/chunks.
+5. Make the result available to downstream nodes.
+
+Do not duplicate the RAG implementation.
+
+==================================================
+PART 13 - HTTP EXECUTOR
+==================================================
+
+IMPORTANT SECURITY REQUIREMENT.
+
+Do NOT allow arbitrary URLs.
+
+The HTTP executor may ONLY call registered integrations/tools.
+
+For example:
+
+get_customer
+get_order
+
+must be resolved through the Tool Registry.
+
+The workflow may contain:
+
+{
+  "type": "http",
+  "config": {
+    "tool": "get_order"
+  }
+}
+
+The executor resolves:
+
+tool
+ ↓
+Tool Registry
+ ↓
+Approved HTTP integration
+ ↓
+Execution
+
+Never allow:
+
+{
+  "url": "http://arbitrary-server.com"
+}
+
+unless that URL belongs to an explicitly registered integration.
+
+==================================================
+PART 14 - CONDITION EXECUTOR
+==================================================
+
+Implement basic conditions.
+
+Example:
+
+{
+  "type": "condition",
+  "config": {
+    "expression": "resolved == false"
+  }
+}
+
+Do NOT execute arbitrary C# or JavaScript expressions.
+
+Implement a safe condition evaluator.
+
+Initially support:
+
+equals
+notEquals
+contains
+exists
+greaterThan
+lessThan
+
+Example:
+
+{
+  "field": "ticketRequired",
+  "operator": "equals",
+  "value": true
+}
+
+Connections can contain:
+
+{
+  "condition": "true"
+}
+
+or reference a condition branch safely.
+
+==================================================
+PART 15 - EMAIL EXECUTOR
+==================================================
+
+Reuse the existing email infrastructure if available.
+
+The node should support:
+
+- recipient
+- subject
+- body
+
+Allow variables from previous node outputs.
+
+Example:
+
+Hello {{customer.name}},
+
+Your order {{order.id}} is currently {{order.status}}.
+
+Do not allow arbitrary template execution.
+
+==================================================
+PART 16 - CREATE TICKET EXECUTOR
+==================================================
+
+Reuse the existing ticket/support integration if available.
+
+Example:
+
+{
+  "customerId": "{{customer.id}}",
+  "subject": "{{ticket.subject}}",
+  "description": "{{ticket.description}}",
+  "priority": "high"
+}
+
+Variables must come from workflow context.
+
+==================================================
+PART 17 - WORKFLOW CONTEXT
+==================================================
+
+Create:
+
+WorkflowExecutionContext
+
+It should contain:
+
+- ExecutionId
+- WorkflowId
+- UserId
+- Input
+- NodeOutputs
+- Variables
+- Metadata
+- CancellationToken
+
+Example:
+
+context.NodeOutputs["get-order"]
+
+returns the output of the order node.
+
+Support variable references such as:
+
+{{get-order.status}}
+
+or use a safer structured representation if the existing project
+has a templating mechanism.
+
+Do NOT use arbitrary expression evaluation.
+
+==================================================
+PART 18 - EXECUTION DATABASE
+==================================================
+
+Create persistence for executions.
+
+WorkflowExecution:
+
+- Id
+- WorkflowId
+- StartedAt
+- CompletedAt
+- Status
+- TriggeredBy
+- ErrorMessage
+
+Statuses:
+
+Pending
+Running
+Completed
+Failed
+Cancelled
+
+Create:
+
+WorkflowNodeExecution:
+
+- Id
+- ExecutionId
+- NodeId
+- StartedAt
+- CompletedAt
+- Status
+- Input
+- Output
+- ErrorMessage
+
+Store execution metadata in PostgreSQL.
+
+Avoid storing secrets.
+
+==================================================
+PART 19 - EXECUTION LOGGING
+==================================================
+
+The UI must be able to display:
+
+Workflow started
+↓
+AI Agent running
+↓
+AI Agent completed
+↓
+Knowledge Search running
+↓
+Knowledge Search completed
+↓
+HTTP Request running
+↓
+HTTP Request completed
+↓
+Condition evaluated
+↓
+Ticket created
+↓
+Workflow completed
+
+Create:
+
+GET /api/workflows/executions/{id}
+
+and:
+
+GET /api/workflows/{workflowId}/executions
+
+==================================================
+PART 20 - REAL-TIME EXECUTION
+==================================================
+
+If the existing application already uses SignalR/WebSockets,
+reuse it.
+
+Otherwise implement polling for the MVP.
+
+Preferred UX:
+
+User clicks:
+
+[ Test Run ]
+
+Then:
+
+Execution started...
+
+AI Agent       ● Running
+Knowledge      ○ Waiting
+HTTP           ○ Waiting
+Ticket         ○ Waiting
+
+As execution progresses:
+
+AI Agent       ✓ Completed
+Knowledge      ✓ Completed
+HTTP           ● Running
+Ticket         ○ Waiting
+
+Do not introduce complex real-time infrastructure unless necessary.
+
+==================================================
+PART 21 - TEST RUN
+==================================================
+
+Add a Test Run panel.
+
+Example:
+
+Input:
+
+{
+  "customerId": "12345",
+  "message": "My order has not arrived."
+}
+
+Buttons:
+
+[ Run ]
+
+The user should see:
+
+Input
+ ↓
+Workflow
+ ↓
+Node results
+ ↓
+Final output
+
+The test execution must NOT activate/deploy the workflow.
+
+==================================================
+PART 22 - DEPLOY / ACTIVATE
+==================================================
+
+Add:
+
+[ Activate ]
+
+Before activation:
+
+1. Validate workflow.
+2. Verify permissions.
+3. Verify required integrations.
+4. Verify required configuration.
+5. Require approval for external side effects.
+
+Then:
+
+Draft
+ ↓
+Validated
+ ↓
+Active
+
+An Active workflow can be executed by its trigger.
+
+==================================================
+PART 23 - TRIGGERS
+==================================================
+
+For MVP support:
+
+Manual trigger
+Webhook trigger
+
+Example:
+
+POST /api/workflows/{id}/trigger
+
+Request:
+
+{
+  "input": {
+    "customerId": "123",
+    "message": "Where is my order?"
+  }
+}
+
+Validate authentication and authorization.
+
+Never allow anonymous execution unless explicitly configured.
+
+==================================================
+PART 24 - FRONTEND EXECUTION EXPERIENCE
+==================================================
+
+On the workflow editor provide:
+
+[ Validate ]
+[ Save ]
+[ Test Run ]
+[ Activate ]
+
+When Test Run is clicked:
+
+Open execution panel.
+
+Display:
+
+Execution ID
+Status
+Start time
+Duration
+
+Then node-by-node results.
+
+Example:
+
+✓ Customer Request
+✓ AI Agent
+✓ Knowledge Search
+✓ Get Order
+✓ Condition
+✓ Create Ticket
+
+Clicking a node should display:
+
+Input
+Output
+Duration
+Status
+Error if applicable
+
+Never display secrets.
+
+==================================================
+PART 25 - ERROR HANDLING
+==================================================
+
+Execution failures must:
+
+1. Stop execution unless the workflow defines error handling.
+2. Mark the node as Failed.
+3. Mark the execution as Failed.
+4. Persist the error.
+5. Log the error.
+6. Return a safe error to the frontend.
+
+Do not expose stack traces to normal users.
+
+Developers may see detailed errors through server logs.
+
+==================================================
+PART 26 - TIMEOUTS
+==================================================
+
+Every node execution must support cancellation and timeout.
+
+Do not allow:
+
+- infinite LLM requests
+- infinite HTTP calls
+- infinite workflow loops
+
+Use configuration such as:
+
+NodeTimeoutSeconds
+WorkflowTimeoutSeconds
+
+Use the project's existing resilience implementation if available.
+
+==================================================
+PART 27 - RETRIES
+==================================================
+
+Do NOT automatically retry every node.
+
+Retries should initially be supported only for safe/idempotent operations.
+
+Examples:
+
+Safe:
+- knowledge search
+- GET order
+- GET customer
+
+Potentially unsafe:
+- create ticket
+- send email
+
+Do not blindly retry side effects.
+
+If the project already contains resilience/Polly infrastructure,
+reuse it.
+
+==================================================
+PART 28 - LOOP PROTECTION
+==================================================
+
+The execution engine must prevent infinite loops.
+
+Implement:
+
+MaximumNodeExecutions
+
+For example:
+
+default = 100
+
+If exceeded:
+
+WorkflowExecutionStatus = Failed
+
+Error:
+
+"Maximum workflow execution limit exceeded."
+
+==================================================
+PART 29 - SECURITY
+==================================================
+
+NEVER allow workflow execution to:
+
+- execute arbitrary C#
+- execute shell commands
+- execute arbitrary JavaScript
+- execute arbitrary SQL
+- access arbitrary filesystem paths
+- access arbitrary URLs
+- access secrets
+- bypass authentication
+- bypass authorization
+
+All capabilities must go through registered nodes/tools.
+
+==================================================
+PART 30 - API ENDPOINTS
+==================================================
+
+Implement or extend:
+
+GET    /api/workflows/node-types
+
+POST   /api/workflows
+
+GET    /api/workflows
+
+GET    /api/workflows/{id}
+
+PUT    /api/workflows/{id}
+
+DELETE /api/workflows/{id}
+
+POST   /api/workflows/{id}/validate
+
+POST   /api/workflows/{id}/test
+
+POST   /api/workflows/{id}/activate
+
+POST   /api/workflows/{id}/trigger
+
+GET    /api/workflows/{id}/executions
+
+GET    /api/workflows/executions/{executionId}
+
+Follow existing API naming conventions if they differ.
+
+==================================================
+PART 31 - EXECUTION HISTORY
+==================================================
+
+Create a page:
+
+Workflow Executions
+
+Columns:
+
+Workflow
+Status
+Started
+Duration
+Triggered By
+
+Statuses:
+
+✓ Completed
+● Running
+✕ Failed
+⊘ Cancelled
+
+Click execution:
+
+Show detailed execution timeline.
+
+==================================================
+PART 32 - UX
+==================================================
+
+The user experience should feel like:
+
+1. Generate
+2. Review
+3. Edit
+4. Validate
+5. Test
+6. Activate
+
+Do not overwhelm the user with technical details.
+
+The editor is primarily a business/developer tool.
+
+==================================================
+PART 33 - DEMO WORKFLOW
+==================================================
+
+Ensure this workflow works end-to-end:
+
+Customer Support Agent
+
+Input:
+
+{
+  "customerId": "123",
+  "message": "My order hasn't arrived."
+}
+
+Flow:
+
+Manual Trigger
+     ↓
+AI Agent
+     ↓
+Knowledge Search
+     ↓
+Get Customer
+     ↓
+Get Order
+     ↓
+Condition
+    / \
+ resolved unresolved
+    |       |
+ response  Create Ticket
+             ↓
+           Email
+
+The exact integration should use existing project APIs where available.
+
+If those APIs do not exist, implement clean mock/demo providers behind
+interfaces.
+
+Do NOT hardcode demo logic into the workflow engine.
+
+==================================================
+PART 34 - TESTING
+==================================================
+
+Create tests for:
+
+WorkflowExecutor
+
+- valid sequential workflow
+- missing node
+- invalid node
+- invalid connection
+- condition true
+- condition false
+- failed node
+- timeout
+- cancellation
+- maximum execution limit
+
+Node executors:
+
+- AI Agent
+- Knowledge Search
+- HTTP
+- Condition
+- Email
+- Create Ticket
+
+API tests:
+
+- generate workflow
+- validate workflow
+- save workflow
+- update workflow
+- test workflow
+- activate workflow
+- trigger workflow
+- retrieve execution
+- retrieve execution history
+
+Frontend tests where the existing project supports them.
+
+Do NOT call real Ollama, email systems, or external APIs in unit tests.
+
+Use mocks/fakes.
+
+==================================================
+PART 35 - DOCKER / LOCAL DEVELOPMENT
+==================================================
+
+The existing Docker environment contains:
+
+- PostgreSQL
+- pgvector
+- Redis
+- Ollama
+- n8n
+- pgAdmin
+
+Reuse these services.
+
+Do not introduce duplicate containers.
+
+Make sure the workflow editor and executor can run using the existing
+docker-compose environment.
+
+==================================================
+PART 36 - OBSERVABILITY
+==================================================
+
+Use the existing logging infrastructure.
+
+Every execution should have:
+
+ExecutionId
+WorkflowId
+NodeId
+
+Include these values in structured logs.
+
+Example:
+
+WorkflowExecutionId=abc
+WorkflowId=123
+NodeId=get-order
+Status=Completed
+
+Never log credentials or secrets.
+
+==================================================
+PART 37 - IMPLEMENTATION ORDER
+==================================================
+
+Implement in this exact order:
+
+PHASE 1
+Inspect existing implementation.
+
+PHASE 2
+Implement node registry API.
+
+PHASE 3
+Implement visual editor.
+
+PHASE 4
+Connect editor to WorkflowDefinition.
+
+PHASE 5
+Implement save/load.
+
+PHASE 6
+Implement validation integration.
+
+PHASE 7
+Implement execution domain model.
+
+PHASE 8
+Implement execution persistence.
+
+PHASE 9
+Implement executor registry.
+
+PHASE 10
+Implement sequential execution engine.
+
+PHASE 11
+Implement node executors.
+
+PHASE 12
+Implement test run API.
+
+PHASE 13
+Implement execution history API.
+
+PHASE 14
+Implement frontend execution panel.
+
+PHASE 15
+Implement activation.
+
+PHASE 16
+Implement manual/webhook triggers.
+
+PHASE 17
+Implement tests.
+
+PHASE 18
+Run complete build and fix issues.
+
+==================================================
+IMPORTANT ARCHITECTURAL RULE
+==================================================
+
+Keep these responsibilities separated:
+
+AI Workflow Generator
+        ↓
+Workflow Definition
+        ↓
+Workflow Validator
+        ↓
+Workflow Editor
+        ↓
+Workflow Executor
+        ↓
+Node Executors
+        ↓
+External Tools/Services
+
+The editor must NOT execute workflows.
+
+The generator must NOT execute workflows.
+
+The validator must NOT execute workflows.
+
+The executor must NOT generate workflows.
+
+Each component has one responsibility.
+
+==================================================
+FINAL ACCEPTANCE CRITERIA
+==================================================
+
+The feature is considered complete when the following demo works:
+
+1. User opens FlowForge.
+2. User clicks "Create with AI".
+3. User writes:
+
+   "Create a customer support agent that searches our documentation,
+   checks the customer's order and creates a ticket when the issue
+   cannot be resolved."
+
+4. AI generates a workflow.
+5. Workflow appears automatically in the visual editor.
+6. User can drag nodes.
+7. User can connect nodes.
+8. User can edit node configuration.
+9. User clicks Validate.
+10. Validation succeeds.
+11. User clicks Save.
+12. User clicks Test Run.
+13. Execution starts.
+14. Nodes execute sequentially.
+15. Execution status appears in the UI.
+16. User can inspect every node's input/output.
+17. Workflow completes successfully.
+18. User can open Execution History.
+19. User can activate the workflow.
+20. User can trigger it through the API.
+
+The final experience must demonstrate:
+
+NATURAL LANGUAGE
+       ↓
+AI GENERATION
+       ↓
+VISUAL WORKFLOW
+       ↓
+VALIDATION
+       ↓
+TEST
+       ↓
+EXECUTION
+       ↓
+OBSERVABILITY
+       ↓
+PRODUCTION
+
+This is the core FlowForge AI product experience.
+
+==================================================
+FINAL REPORT
+==================================================
+
+After implementation provide:
+
+1. Architecture changes
+2. Files created
+3. Files modified
+4. Database migrations
+5. API endpoints
+6. Frontend routes/components
+7. Node executors
+8. Execution model
+9. Configuration required
+10. Docker changes
+11. Tests implemented
+12. How to run the complete demo
+13. Example API requests
+14. Known limitations
+
+Before finishing:
+
+- dotnet build
+- dotnet test
+- frontend build
+- frontend tests if available
+
+Fix all compilation errors.
+
+Do not leave core functionality as TODO.
+
+Do not break existing FlowForge functionality.
