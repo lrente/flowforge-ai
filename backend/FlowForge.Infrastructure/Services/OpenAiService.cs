@@ -3,9 +3,7 @@ using System.Text;
 using System.Text.Json;
 using FlowForge.Application.Interfaces;
 using FlowForge.Infrastructure.Configuration;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using FlowForge.Infrastructure.Configuration;
 namespace FlowForge.Infrastructure.Services;
 
 public sealed class OpenAiService(
@@ -83,16 +81,7 @@ public sealed class OpenAiService(
 
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 
-        Console.WriteLine($"Model: {_options.Model}");
-        Console.WriteLine($"Key starts with: {apiKey[..Math.Min(apiKey.Length, 10)]}");
-
         using var response = await _httpClient.SendAsync(request, cancellationToken);
-
-        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
-
-        Console.WriteLine($"Status: {(int)response.StatusCode}");
-        Console.WriteLine(responseBody);
-
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken);

@@ -19,7 +19,11 @@ public sealed class JwtService : IJwtService
 
     public string GenerateToken(User user)
     {
-        var jwtKey = _configuration["Jwt:Key"] ?? "development-secret-key-123456";
+        var jwtKey = _configuration["Jwt:Key"];
+        if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
+        {
+            throw new InvalidOperationException("Jwt:Key must be configured with at least 32 characters.");
+        }
         var issuer = _configuration["Jwt:Issuer"] ?? "FlowForge";
         var audience = _configuration["Jwt:Audience"] ?? "FlowForgeClients";
 

@@ -3,7 +3,6 @@ using FlowForge.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using FlowForge.Application.Interfaces;
 using FlowForge.Application.Security;
 
 namespace FlowForge.Api.Controllers;

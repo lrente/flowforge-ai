@@ -1,4 +1,5 @@
 using FlowForge.Application.Interfaces;
+using FlowForge.Application.Workflows;
 using FlowForge.Domain.Interfaces;
 using FlowForge.Infrastructure.Configuration;
 using FlowForge.Infrastructure.Persistence;
@@ -16,7 +17,9 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, string? connectionString, IConfiguration configuration)
     {
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseNpgsql(connectionString));
+            options.UseNpgsql(string.IsNullOrWhiteSpace(connectionString)
+                ? throw new InvalidOperationException("ConnectionStrings:DefaultConnection is required.")
+                : connectionString));
         services.AddHttpContextAccessor();
 
         services.AddScoped<IUserRepository, UserRepository>();
@@ -40,9 +43,19 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IKnowledgeProcessingService, KnowledgeProcessingService>();
         services.AddScoped<KnowledgeService>();
         services.Configure<OpenAIOptions>(configuration.GetSection(OpenAIOptions.SectionName));
+        services.Configure<LLMOptions>(configuration.GetSection(LLMOptions.SectionName));
         services.AddHttpClient<IOpenAiService, OpenAiService>();
+        services.AddHttpClient<OpenAiLlmProvider>();
+        services.AddScoped<ILLMProvider>(serviceProvider => serviceProvider.GetRequiredService<OpenAiLlmProvider>());
+        services.AddScoped<ILLMGateway, LLMGateway>();
+        services.AddSingleton<ITokenCostCalculator, TokenCostCalculator>();
+        services.AddSingleton<IWorkflowOrchestrator, WorkflowOrchestrator>();
 
-        var jwtKey = configuration["Jwt:Key"] ?? "development-secret-key-123456";
+        var jwtKey = configuration["Jwt:Key"];
+        if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
+        {
+            throw new InvalidOperationException("Jwt:Key must be configured with at least 32 characters.");
+        }
         var issuer = configuration["Jwt:Issuer"] ?? "FlowForge";
         var audience = configuration["Jwt:Audience"] ?? "FlowForgeClients";
 

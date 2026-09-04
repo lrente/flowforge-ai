@@ -1,0 +1,28 @@
+name: backend-ci
+
+on:
+  push:
+    paths:
+      - '**/*.cs'
+      - '**/*.csproj'
+      - '**/*.json'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    paths:
+      - '**/*.cs'
+      - '**/*.csproj'
+      - '**/*.json'
+      - '.github/workflows/ci.yml'
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+      - run: dotnet restore FlowForge.sln
+      - run: dotnet build FlowForge.sln --no-restore --configuration Release
+      - run: dotnet test FlowForge.Tests/FlowForge.Tests.csproj --no-build --configuration Release
+      - run: dotnet list FlowForge.sln package --vulnerable --include-transitive
