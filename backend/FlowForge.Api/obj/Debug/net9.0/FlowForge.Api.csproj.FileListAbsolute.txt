@@ -178,3 +178,4 @@ C:\flowforge-ai\flowforge-ai\backend\FlowForge.Api\obj\Debug\net9.0\refint\FlowF
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Api\obj\Debug\net9.0\FlowForge.Api.pdb
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Api\obj\Debug\net9.0\FlowForge.Api.genruntimeconfig.cache
 C:\flowforge-ai\flowforge-ai\backend\FlowForge.Api\obj\Debug\net9.0\ref\FlowForge.Api.dll
+C:\flowforge-ai\flowforge-ai\backend\FlowForge.Api\obj\Debug\net9.0\swae.build.ex.cache

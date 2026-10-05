@@ -10,6 +10,15 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - flowforge-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d flowforge"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
@@ -34,10 +43,11 @@ services:
       DB_TYPE: postgresdb
       DB_POSTGRESDB_HOST: postgres
       DB_POSTGRESDB_PORT: 5432
-      DB_POSTGRESDB_DATABASE: ${POSTGRES_DB:-flowforge}
-      DB_POSTGRESDB_USER: ${POSTGRES_USER:-flowforge}
-      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD:-flowforge123}
-      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY:-flowforge-encryption-key}
+      DB_POSTGRESDB_DATABASE: flowforge
+      DB_POSTGRESDB_USER: postgres
+      DB_POSTGRESDB_PASSWORD: postgres
+
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY:-flowforge-local-encryption-key-2026}
       N8N_HOST: ${N8N_HOST:-localhost}
       N8N_PORT: 5678
       N8N_PROTOCOL: http
@@ -55,6 +65,7 @@ services:
       interval: 15s
       timeout: 10s
       retries: 10
+      start_period: 30s
     restart: unless-stopped
 
   backend:
@@ -65,8 +76,10 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Docker
       ASPNETCORE_URLS: http://+:5000
-      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB:-flowforge};Username=${POSTGRES_USER:-flowforge};Password=${POSTGRES_PASSWORD:-flowforge123}
-      Jwt__Key: ${JWT_KEY:-development-secret-key-123456}
+
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=flowforge;Username=postgres;Password=postgres
+
+      Jwt__Key: ${JWT_KEY:-flowforge-local-dev-jwt-secret-key-2026}
       Jwt__Issuer: ${JWT_ISSUER:-FlowForge}
       Jwt__Audience: ${JWT_AUDIENCE:-FlowForgeClients}
     ports:
@@ -83,6 +96,7 @@ services:
       interval: 15s
       timeout: 10s
       retries: 10
+      start_period: 30s
     restart: unless-stopped
 
   frontend:

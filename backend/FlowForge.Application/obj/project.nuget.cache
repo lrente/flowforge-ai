@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "GwNTF5E9/+Q=",
+  "dgSpecHash": "f5TWMgrKofI=",
   "success": true,
   "projectFilePath": "C:\\flowforge-ai\\flowforge-ai\\backend\\FlowForge.Application\\FlowForge.Application.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\lrent\\.nuget\\packages\\microsoft.netcore.app.ref\\9.0.19\\microsoft.netcore.app.ref.9.0.19.nupkg.sha512",
+    "C:\\Users\\lrent\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\9.0.19\\microsoft.windowsdesktop.app.ref.9.0.19.nupkg.sha512",
+    "C:\\Users\\lrent\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\9.0.19\\microsoft.aspnetcore.app.ref.9.0.19.nupkg.sha512"
+  ],
   "logs": []
 }
